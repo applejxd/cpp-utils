@@ -30,14 +30,14 @@ namespace util {
             }
         }
 
-        vector<vector<string> table{};
+        vector<vector<string>> table{};
         {
             for (const auto &line : lines) {
                 vector<string> words{};
                 {
-                    std::stringstream ss(line);
+                    std::istringstream ss(line);
                     string word;
-                    while (std::getline(ss, word, ",")) {
+                    while (std::getline(ss, word, ',')) {
                         words.push_back(word);
                     }
                 }
@@ -48,8 +48,9 @@ namespace util {
         return table;
     }
 
+    template<typename T>
     inline void WriteCsv(const string &file_name, const vector<vector<T>> &table, const string &header = {}) {
-        std::ostream ofs(file_name);
+        std::ofstream ofs(file_name);
 
         if (!header.empty()) {
             ofs << header << std::endl;

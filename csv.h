@@ -8,49 +8,58 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <glog/logging.h>
 
 namespace util {
     using std::vector;
     using std::string;
 
-    inline vector<vector<string>> ReadCsv(const string &file_name, bool skip_header=false) {
+    inline void ReadCsv(const string &file_name, vector<vector<string>> *table, vector<string> *header) {
+        if (table == nullptr) {
+            LOG(FATAL) << "Payload table is null pointer.";
+        }
+        table->clear();
+
         std::ifstream ifs(file_name);
         if (!ifs) {
-            throw std::runtime_error("Cannot open csv file: " + file_name);
+            LOG(FATAL) << "Cannot open csv file: " << file_name;
+        } else {
+            LOG(INFO) << "Read: " << file_name;
         }
 
+        // 行読み込み
         vector<string> lines{};
         {
             string str_buf;
-            // ヘッダ行読み飛ばし
-            if (skip_header) { getline(ifs, str_buf); }
             // ペイロード読み込み
             while (getline(ifs, str_buf)) {
                 lines.push_back(str_buf);
             }
         }
 
-        vector<vector<string>> table{};
-        {
-            for (const auto &line : lines) {
-                vector<string> words{};
-                {
-                    std::istringstream ss(line);
-                    string word;
-                    while (std::getline(ss, word, ',')) {
-                        words.push_back(word);
-                    }
+        // セル読み込み
+        for (const auto &line : lines) {
+            vector<string> words{};
+            {
+                std::istringstream ss(line);
+                string word;
+                while (std::getline(ss, word, ',')) {
+                    words.push_back(word);
                 }
-                table.push_back(words);
             }
+            table->push_back(words);
         }
 
-        return table;
+        if (header != nullptr) {
+            std::copy(table->begin()->begin(), table->begin()->end(), std::back_inserter(*header));
+            table->erase(table->begin());
+        }
     }
 
     template<typename T>
     inline void WriteCsv(const string &file_name, const vector<vector<T>> &table, const string &header = {}) {
         std::ofstream ofs(file_name);
+        LOG(INFO) << "Write: " << file_name;
 
         if (!header.empty()) {
             ofs << header << std::endl;

@@ -75,6 +75,30 @@ namespace util {
             ofs << std::endl;
         }
     }
+
+    template<class T>
+    inline void SaveVar(const string &file_name, const T &var) {
+        std::ofstream ofs;
+        ofs.open(file_name, std::ios::binary | std::ios::out | std::ios::trunc);
+        LOG(INFO) << "Write: " << file_name;
+
+        ofs.write((char *) &var, sizeof(T));
+        ofs.close();
+    }
+
+    template<class T>
+    inline void LoadVar(const string &file_name, T *var) {
+        std::ifstream ifs;
+        ifs.open(file_name, std::ios::binary | std::ios::in);
+        if (!ifs) {
+            LOG(FATAL) << "Cannot open csv file: " << file_name;
+        } else {
+            LOG(INFO) << "Read: " << file_name;
+        }
+
+        ifs.read((char *) var, sizeof(T));
+        ifs.close();
+    }
 }
 
 #endif //CSV_IO_H

@@ -10,6 +10,11 @@
 #include <stdexcept>
 #include <glog/logging.h>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+
 namespace util {
     using std::vector;
     using std::string;
@@ -82,7 +87,7 @@ namespace util {
         ofs.open(file_name, std::ios::binary | std::ios::out | std::ios::trunc);
         LOG(INFO) << "Write: " << file_name;
 
-        ofs.write((char *) &var, sizeof(T));
+        ofs.write((char *) &var, sizeof(var));
         ofs.close();
     }
 
@@ -96,8 +101,48 @@ namespace util {
             LOG(INFO) << "Read: " << file_name;
         }
 
-        ifs.read((char *) var, sizeof(T));
+        ifs.read((char *) var, sizeof(*var));
         ifs.close();
+    }
+
+    template<typename T>
+    class SerializationWrapper {
+    public:
+        SerializationWrapper() {}
+
+        SerializationWrapper(const T &var) : var_(var) {}
+
+        T GetVar() { return var_; }
+
+    private:
+        T var_;
+
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void serialize(Archive &ar, unsigned int /*version*/) {
+            ar & boost::serialization::make_nvp("var_", var_);
+        }
+    };
+
+    template<typename T>
+    inline void SaveSerializedData(const string &file_name, const T &var) {
+        std::ofstream file(file_name);
+        boost::archive::text_oarchive ar(file);
+
+        auto data = SerializationWrapper<T>(var);
+
+        ar << boost::serialization::make_nvp("data", data);
+    }
+
+    template<typename T>
+    inline T LoadSerializedData(const string &file_name) {
+        std::ifstream file(file_name);
+        boost::archive::text_iarchive ar(file);
+
+        SerializationWrapper<T> data;
+        ar >> boost::serialization::make_nvp("data", data);
+        return data.GetVar();
     }
 }
 

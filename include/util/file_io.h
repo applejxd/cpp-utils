@@ -108,9 +108,9 @@ namespace util {
     template<typename T>
     class SerializationWrapper {
     public:
-        SerializationWrapper() {}
+        SerializationWrapper() = default;
 
-        SerializationWrapper(const T &var) : var_(var) {}
+        explicit SerializationWrapper(const T &var) : var_(var) {}
 
         T GetVar() { return var_; }
 

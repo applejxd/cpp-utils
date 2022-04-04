@@ -24,7 +24,7 @@ namespace util {
         static boost::property_tree::ptree pt;
 
         if (pt.empty()) {
-            boost::property_tree::read_ini("config.ini", pt);
+            boost::property_tree::read_ini("data/config.ini", pt);
             if (pt.empty()) {
                 LOG(FATAL) << "Cannot open file: config.ini";
             }

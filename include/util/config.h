@@ -24,9 +24,9 @@ namespace util {
         static boost::property_tree::ptree pt;
 
         if (pt.empty()) {
-            boost::property_tree::read_ini("config.ini", pt);
+            boost::property_tree::read_ini("data/config.ini", pt);
             if (pt.empty()) {
-                throw std::runtime_error("Cannot open file: config.ini");
+                LOG(FATAL) << "Cannot open file: config.ini";
             }
         }
 
@@ -34,7 +34,7 @@ namespace util {
             LOG(INFO) << "Read param: " << key << " = " << value.get();
             return value.get();
         } else {
-            throw std::runtime_error("Cannot get parameter: " + key);
+            LOG(FATAL) << "Cannot get parameter: " << key;
         }
     }
 
@@ -44,7 +44,7 @@ namespace util {
         explicit Config(const string &file_name) {
             boost::property_tree::read_ini(file_name, pt_);
             if (pt_.empty()) {
-                throw std::runtime_error("Cannot open file: " + file_name);
+                LOG(FATAL) << "Cannot open file: " << file_name;
             }
         };
 
@@ -53,7 +53,7 @@ namespace util {
             if (boost::optional<T> value = pt_.get_optional<T>(key)) {
                 return value.get();
             } else {
-                throw std::runtime_error("Cannot get parameter: " + key);
+                LOG(FATAL) << "Cannot get parameter: " << key;
             }
         }
 

@@ -16,11 +16,15 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="WSL (88649df3-a7dd-4f9b-a1c2-cfc99d610407)">
+      <paths name="WSL Docker (adcb1b33-091f-46e9-a001-cbc81549d4f0)">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/tmp/cpp-utils" local="$PROJECT_DIR$" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
